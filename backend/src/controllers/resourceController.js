@@ -191,19 +191,21 @@ exports.deleteResources = async (req, res) => {
 exports.autoSave = async (req, res) => {
   try {
     const { title, content, tags, subjectId } = req.body;
-    const updateData = { title, content, tags };
-    
+
+    const updateOp = {
+      $set: { title, content, tags },
+    };
+
     if (subjectId) {
-      updateData.subjectId = subjectId;
-    } else if (subjectId === null || subjectId === '') {
-      // If explicitly null or empty, we might want to unset it, 
-      // but usually we just skip it if it's not a valid ObjectId
-      updateData.$unset = { subjectId: 1 };
+      updateOp.$set.subjectId = subjectId;
+    } else {
+      // Unset subjectId if empty or null — must be separate operator
+      updateOp.$unset = { subjectId: '' };
     }
 
     const resource = await Resource.findOneAndUpdate(
       { _id: req.params.id, userId: req.user._id },
-      updateData,
+      updateOp,
       { new: true }
     );
     if (!resource) return res.status(404).json({ message: 'Resource not found' });
