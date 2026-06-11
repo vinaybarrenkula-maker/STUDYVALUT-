@@ -107,7 +107,12 @@ exports.getResource = async (req, res) => {
 exports.createResource = async (req, res) => {
   try {
     req.body.userId = req.user._id;
-    
+
+    // Use default title if none provided
+    if (!req.body.title || req.body.title.trim() === '') {
+      req.body.title = 'Untitled Wisdom';
+    }
+
     // Remove subjectId if it's null or empty string to avoid CastError
     if (!req.body.subjectId) {
       delete req.body.subjectId;
@@ -117,6 +122,11 @@ exports.createResource = async (req, res) => {
     res.status(201).json({ success: true, data: resource });
   } catch (err) {
     console.error('Create Resource Error:', err);
+    // Handle Mongoose validation errors with 400 instead of 500
+    if (err.name === 'ValidationError') {
+      const messages = Object.values(err.errors).map(e => e.message);
+      return res.status(400).json({ message: messages.join(', ') });
+    }
     res.status(500).json({ message: err.message });
   }
 };

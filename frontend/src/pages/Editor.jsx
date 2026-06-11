@@ -145,8 +145,9 @@ const Editor = () => {
 
   const handleCreate = async () => {
     try {
+      const finalTitle = title.trim() || 'Untitled Wisdom';
       const { data } = await api.post('/resources', {
-        title,
+        title: finalTitle,
         content,
         subjectId: subjectId || null,
         tags: (tags || '').split(',').map(t => t.trim()).filter(Boolean),
@@ -155,6 +156,8 @@ const Editor = () => {
       navigate(`/editor/${data.data._id}`);
     } catch (err) {
       console.error(err);
+      const msg = err.response?.data?.message || 'Failed to create note. Please try again.';
+      alert(msg);
     }
   };
 
