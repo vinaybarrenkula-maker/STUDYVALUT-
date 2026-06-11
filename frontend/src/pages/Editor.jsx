@@ -100,7 +100,7 @@ const Editor = () => {
     }
   };
 
-  const { saving } = useAutosave(!isNew ? id : null, { title, content, tags: tags.split(',').map(t => t.trim()).filter(Boolean) });
+  const { saving } = useAutosave(!isNew ? id : null, { title, content, tags: (tags || '').split(',').map(t => t.trim()).filter(Boolean) });
 
   useEffect(() => {
     if (titleRef.current) {
@@ -130,7 +130,7 @@ const Editor = () => {
       const { data } = await api.get(`/resources/${id}`);
       setTitle(data.data.title);
       setContent(data.data.content);
-      setTags(data.data.tags.join(', '));
+      setTags(data.data.tags ? data.data.tags.join(', ') : '');
       setSubjectId(data.data.subjectId || '');
       setChatMessages([
         { role: 'bot', text: `Hi! I'm your AI Study Companion. I have analyzed your note "${data.data.title}". Ask me any questions or doubts you have about this topic!` }
@@ -149,7 +149,7 @@ const Editor = () => {
         title,
         content,
         subjectId: subjectId || null,
-        tags: tags.split(',').map(t => t.trim()).filter(Boolean),
+        tags: (tags || '').split(',').map(t => t.trim()).filter(Boolean),
         masteryLevel: 1
       });
       navigate(`/editor/${data.data._id}`);
