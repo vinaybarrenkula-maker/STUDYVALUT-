@@ -58,7 +58,7 @@ const Dashboard = () => {
     <div className="max-w-7xl mx-auto py-12 px-6">
       <header className="mb-12">
         <h1 className="text-5xl font-black tracking-tight mb-2">
-          Welcome back, <span className="text-accent">{user?.name.split(' ')[0]}</span>
+          Welcome back, <span className="text-accent">{user?.name ? user.name.split(' ')[0] : ''}</span>
         </h1>
         <p className="text-muted-foreground text-lg">
           Your academic workspace is synced and ready.
